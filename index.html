@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>코딩국수의 버그피하기</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #gameScreen {
+      width: 1200px;
+      height: 600px;
+      position: absolute;
+    }
+
+    .dinosaur {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      bottom: 0;
+      background-image: url('https://yt3.googleusercontent.com/RpcTGn418CVzcC_omD_VKY2i1Sh2-C6bgh6rGy8vmLxfv4bAFsX-3YiJ2f9SkYXBuTyKGNZd=s176-c-k-c0x00ffffff-no-rj');
+      background-size: cover;
+    }
+
+    .obstacle {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      bottom: 5px;
+      font-size: 40px;
+      text-align: center;
+    }
+
+    .background-image {
+      width: 1500px;
+      height: 820px;
+      margin-top: 20px;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="gameScreen">
+    <div class="dinosaur"></div>
+  </div>
+  <img src="https://img.freepik.com/free-vector/nature-roadside-background-scene_1308-131779.jpg"
+    alt="Nature Roadside Background Scene" class="background-image">
+  <script>
+    const gameScreen = document.getElementById('gameScreen');
+    const dinosaur = document.querySelector('.dinosaur');
+    let isJumping = false;
+    let gravity = 10;
+    let position = 0;
+    let score = 0;
+
+    document.addEventListener('click', () => {
+      if (isJumping) return;
+      isJumping = true;
+      let upTimerId = setInterval(() => {
+        if (position >= 150) {
+          clearInterval(upTimerId);
+          let downTimerId = setInterval(() => {
+            if (position <= 0) {
+              clearInterval(downTimerId);
+              isJumping = false;
+            }
+            position -= gravity;
+            dinosaur.style.bottom = position + 'px';
+          }, 20);
+        }
+        position += 20;
+        dinosaur.style.bottom = position + 'px';
+      }, 20);
+    });
+
+    function createObstacle() {
+      let obstaclePosition = 1200;
+      const obstacle = document.createElement('div');
+      obstacle.classList.add('obstacle');
+      obstacle.innerHTML = '🐛';
+      gameScreen.appendChild(obstacle);
+      obstacle.style.left = obstaclePosition + 'px';
+
+      let timerId = setInterval(moveObstacle, 20);
+
+      function moveObstacle() {
+        if (obstaclePosition > 0 && obstaclePosition < 60 && position < 60) {
+          clearInterval(timerId);
+          gameScreen.removeChild(obstacle);
+          score -= 1;
+          alert('You lost 1 point! Score: ' + score);
+        } else if (obstaclePosition < -30) {
+          clearInterval(timerId);
+          gameScreen.removeChild(obstacle);
+          score += 1;
+          if (score === 5) {
+            alert('Congratulations! Your score is 5!');
+          }
+        } else {
+          obstaclePosition -= 10;
+          obstacle.style.left = obstaclePosition + 'px';
+        }
+      }
+      setTimeout(createObstacle, 2000);
+    }
+    createObstacle();
+
+    function updateScore() {
+      const scoreBoard = document.createElement('div');
+      scoreBoard.style.position = 'absolute';
+      scoreBoard.style.top = '0';
+      scoreBoard.innerHTML = `<h1>코딩국수의 버그피하기</h1><p>Score: <span id="score">0</span></p>`;
+      gameScreen.appendChild(scoreBoard);
+
+      setInterval(() => {
+        document.getElementById('score').textContent = score.toString();
+      }, 100);
+    }
+    updateScore();
+  </script>
+</body>
+
+</html>
