@@ -61,7 +61,7 @@
     let position = 0;
     let score = 0;
 
-    document.addEventListener('click', () => {
+    function jump() {
       if (isJumping) return;
       isJumping = true;
       let upTimerId = setInterval(() => {
@@ -79,6 +79,13 @@
         position += 20;
         dinosaur.style.bottom = position + 'px';
       }, 20);
+    }
+
+    document.addEventListener('click', jump);
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+        jump();
+      }
     });
 
     function createObstacle() {
